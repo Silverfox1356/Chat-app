@@ -4,7 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 //add all routes to this page
-
+const authRoutes = require("./routes/auth");
 //stating app on express plateform 
 const app = express();
 require("dotenv").config();
@@ -27,6 +27,13 @@ mongoose
   .catch((err) => {
     console.log(err.message);
   });
+
+  app.get("/ping", (_req, res) => {
+    return res.json({ msg: "Ping Successful" });
+  });
+  
+  //using middleware for app  
+  app.use("/api/auth", authRoutes);
 
 
   const PORT=5000 || process.env.PORT;

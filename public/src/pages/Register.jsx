@@ -8,6 +8,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { registerRoute } from "../utils/APIRoutes";
 
 export default function Register() {
+      //to navigate to the other page
+  const navigate = useNavigate();
 
  //properties object that we want to show on website
   const toastOptions = {
@@ -25,6 +27,12 @@ export default function Register() {
         password: "",
         confirmPassword: "",
       });
+
+      useEffect(() => {
+        if (localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)) {
+          navigate("/");
+        }
+      }, []);
 
      const handleChange = (event) => {
     //this destructurises the input vaue and set the value to usestate hook
@@ -92,7 +100,7 @@ export default function Register() {
           JSON.stringify(data.user)
         );
         //this nevigates to the chat container 
-        // navigate("/");
+        navigate("/");
       }
     }
   };
