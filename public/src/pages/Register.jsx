@@ -29,7 +29,7 @@ export default function Register() {
       });
 
       useEffect(() => {
-        if (localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)) {
+        if (localStorage.getItem("chat-app-user")) {
           navigate("/");
         }
       }, []);
@@ -95,7 +95,7 @@ export default function Register() {
       if (data.status === true) {
         //storing our data in local storage 
         localStorage.setItem(
-          process.env.REACT_APP_LOCALHOST_KEY,
+          "chat-app-user",
           //data converting into json string bcz browser storage only stores strings 
           JSON.stringify(data.user)
         );
@@ -241,5 +241,4 @@ const FormContainer = styled.div` height: 100vh;
       }
     }
   }`;
-
 
