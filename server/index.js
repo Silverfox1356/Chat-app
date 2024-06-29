@@ -5,6 +5,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 //add all routes to this page
 const authRoutes = require("./routes/auth");
+const messageRoutes = require("./routes/messages");
 //stating app on express plateform 
 const app = express();
 require("dotenv").config();
@@ -34,6 +35,7 @@ mongoose
   
   //using middleware for app  
   app.use("/api/auth", authRoutes);
+  app.use("/api/messages", messageRoutes); 
 
 
   const PORT=5000 || process.env.PORT;
