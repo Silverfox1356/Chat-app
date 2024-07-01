@@ -1,25 +1,33 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { io } from "socket.io-client";
 import styled from "styled-components";
-import { allUsersRoute} from "../utils/APIRoutes";
+import { allUsersRoute, host, recieveMessageRoute } from "../utils/APIRoutes";
 import ChatContainer from "../components/ChatContainer";
 import Contacts from "../components/Contacts";
 import Welcome from "../components/Welcome";
 
 export default function Chat() {
   const navigate = useNavigate();
+  //we use useref hook for sockets 
+  //The object returned by useRef will not change between renders so he can store socket connection instances
+  const socket = useRef();
+  //all react usestate hooks
   //stores all the contacts which are online or login
   const [contacts, setContacts] = useState([]);
   //stores selected chat that we have to how on the right side 
   const [currentChat, setCurrentChat] = useState(undefined);
-   //for footer we have to name current user 
-   const [currentUser, setCurrentUser] = useState(undefined);
+  //for footer we have to name current user 
+  const [currentUser, setCurrentUser] = useState(undefined);
+  //if we get the msg from another msg via sockets then that msg stores in string in this usestate
+  const [arrivalMessage, setArrivalMessage] = useState(null);
+
 
   //for fetching the user from local storage   
   useEffect(() => {
     const checkLocalStorage = async () => {
-      const userKey = "chat-app-user";
+      const userKey = process.env.REACT_APP_LOCALHOST_KEY;
       const userItem = localStorage.getItem(userKey);
 
       if (!userItem) {
@@ -34,6 +42,39 @@ export default function Chat() {
     //first form a function and call it dont write it in one go 
     checkLocalStorage();
   }, [navigate]);
+
+
+  //dealing with socket server
+  useEffect(() => {
+    //if we fetched currentuser then we 
+    if (currentUser) {
+      socket.current = io(host, {
+        reconnectionAttempts: 5, // number of reconnection attempts before giving up
+        reconnectionDelay: 1000, // delay between reconnection attempts in ms
+      });
+      
+      socket.current.on("connect", () => {
+        console.log("Socket connected:", socket.current.id);
+        socket.current.emit("add-user", currentUser._id);
+      });
+
+      socket.current.on("disconnect", () => {
+        console.log("Socket disconnected:", socket.current.id);
+      });
+
+      socket.current.on("connect_error", (err) => {
+        console.error("Socket connection error:", err);
+      });
+
+      return () => {
+        //socket.current is used to maintain a single instance of the Socket.IO client across the component's lifecycle
+        if (socket.current) {
+          socket.current.disconnect();
+        }
+      };
+    }
+  }, [currentUser]);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,6 +96,20 @@ export default function Chat() {
     fetchData();
   }, [currentUser, navigate]);
 
+
+  //not an async await function as once we built the server and acceses its current instance
+  useEffect(() => {
+    if (socket.current) {
+      socket.current.on("msg-receive", (msg) => {
+        setArrivalMessage({ fromSelf: false, message: msg });
+      });
+
+      return () => {
+        socket.current.off("msg-receive");
+      };
+    }
+  }, [socket.current]);
+
   const handleChatChange = (chat) => {
     setCurrentChat(chat);
   };
@@ -66,7 +121,7 @@ export default function Chat() {
         {currentChat === undefined ? (
           <Welcome />
         ) : (
-          <ChatContainer currentChat={currentChat} />
+          <ChatContainer currentChat={currentChat} socket={socket} />
         )}
       </div>
     </Container>
@@ -74,7 +129,7 @@ export default function Chat() {
 }
 
 const Container = styled.div`
-   height: 100vh;
+  height: 100vh;
   width: 100vw;
   display: flex;
   flex-direction: column;
@@ -94,4 +149,3 @@ const Container = styled.div`
     }
   }
 `;
-
