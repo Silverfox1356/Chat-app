@@ -19,7 +19,7 @@ app.use(cors());
 app.use(express.json());
 
 
-const MONGO_URL = process.env.MONGO_URL;
+const MONGO_URL = process.env.CUSTOM_MONGO_URL||"mongodb://localhost:27017/";
 
 //to connect the mongodb database
 mongoose
@@ -65,7 +65,7 @@ const server = app.listen(PORT, () =>
 
 const io = socket(server, {
   cors: {
-    origin: ["http://localhost:3000"],
+    origin: [process.env.CUSTOM_CLIENT_URL||"http://localhost:3000"],
     credentials: true,
   },
 });
