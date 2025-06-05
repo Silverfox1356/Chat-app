@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { Buffer } from "buffer";
+import multiavatar from "@multiavatar/multiavatar/esm";
 import loader from "../assets/loader.gif";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -9,7 +10,6 @@ import { useNavigate } from "react-router-dom";
 import { setAvatarRoute } from "../utils/APIRoutes";
 
 export default function SetAvatar() {
-  const api = "https://api.multiavatar.com";
   const navigate = useNavigate();
 
   const [avatars, setAvatars] = useState([]);
@@ -56,19 +56,18 @@ export default function SetAvatar() {
   
 //api calling to get dummy avatars which we will store in data array 
   useEffect(() => {
-    const fetchAvatars = async () => {
+    const fetchAvatars = () => {
       const data = [];
       for (let i = 0; i < 5; i++) {
-        const image = await axios.get(`${api}/${Math.round(Math.random() * 1000)}`);
-        //convert binary data to base64 string 
-        const buffer = Buffer.from(image.data);
+        const svg = multiavatar(Math.round(Math.random() * 1000).toString());
+        const buffer = Buffer.from(svg);
         data.push(buffer.toString("base64"));
       }
       setAvatars(data);
       setIsLoading(false);
     };
     fetchAvatars();
-  }, [api]);
+  }, []);
 
   return (
     <>
