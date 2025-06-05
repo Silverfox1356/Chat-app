@@ -25,8 +25,7 @@ export default function Chat() {
   //for fetching the user from local storage   
   useEffect(() => {
     const checkLocalStorage = async () => {
-      const userKey = process.env.REACT_APP_LOCALHOST_KEY;
-      const userItem = localStorage.getItem(userKey);
+      const userItem = localStorage.getItem("chat-app-user");
 
       if (!userItem) {
         //if user not found then navigate to the login page
