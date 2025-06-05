@@ -58,7 +58,7 @@ const __dirname1 = path.resolve();
 //******************deployment********************/
 
 
-const PORT=5000 || process.env.PORT;
+const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () =>
   console.log(`Server started on ${PORT}`)
 );

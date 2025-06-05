@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { setAvatarRoute } from "../utils/APIRoutes";
 
 export default function SetAvatar() {
-  const api = `https://api.multiavatar.com/4645646`;
+  const api = "https://api.multiavatar.com";
   const navigate = useNavigate();
 
   const [avatars, setAvatars] = useState([]);
