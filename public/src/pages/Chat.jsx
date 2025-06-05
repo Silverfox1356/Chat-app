@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import styled from "styled-components";
-import { allUsersRoute, host, recieveMessageRoute } from "../utils/APIRoutes";
+import { allUsersRoute, host } from "../utils/APIRoutes";
 import ChatContainer from "../components/ChatContainer";
 import Contacts from "../components/Contacts";
 import Welcome from "../components/Welcome";
@@ -20,8 +20,6 @@ export default function Chat() {
   const [currentChat, setCurrentChat] = useState(undefined);
   //for footer we have to name current user 
   const [currentUser, setCurrentUser] = useState(undefined);
-  //if we get the msg from another msg via sockets then that msg stores in string in this usestate
-  const [arrivalMessage, setArrivalMessage] = useState(null);
 
 
   //for fetching the user from local storage   
@@ -82,7 +80,7 @@ export default function Chat() {
         if (!currentUser) return;
 
         if (!currentUser.isAvatarImageSet) {
-          navigate("/setAvatar");
+          navigate("/setavatar");
           return;
         }
 
@@ -97,18 +95,6 @@ export default function Chat() {
   }, [currentUser, navigate]);
 
 
-  //not an async await function as once we built the server and acceses its current instance
-  useEffect(() => {
-    if (socket.current) {
-      socket.current.on("msg-receive", (msg) => {
-        setArrivalMessage({ fromSelf: false, message: msg });
-      });
-
-      return () => {
-        socket.current.off("msg-receive");
-      };
-    }
-  }, [socket.current]);
 
   const handleChatChange = (chat) => {
     setCurrentChat(chat);
