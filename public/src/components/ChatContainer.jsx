@@ -68,13 +68,13 @@ export default function ChatContainer({ currentChat, socket }) {
       socket.current.on("msg-receive", (msg) => {
         setArrivalMessage({ fromSelf: false, message: msg });
       });
-  
+
       // Clean up the event listener when the component unmounts
       return () => {
         socket.current.off("msg-receive");
       };
     }
-  }, [socket.current]);
+  }, [socket]);
 
   useEffect(() => {
     arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
