@@ -1,0 +1,35 @@
+# .github/workflows/ngrok.yml
+name: run-ngrok
+
+on: [workflow_dispatch]  # Manual trigger
+
+jobs:
+  serve-and-ngrok:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+
+    - name: Install dependencies
+      run: |
+        cd server && npm install
+        cd ../public && npm install
+        cd ..
+
+    - name: Start backend and frontend
+      run: |
+        cd server && npm start &
+        cd ../public && npm start &
+        cd ..
+
+    - name: Run ngrok tunnels
+      env:
+        NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
+      run: |
+        ngrok http 3000 --log=stdout > ngrok_frontend.log &
+        ngrok http 5000 --log=stdout > ngrok_backend.log &
