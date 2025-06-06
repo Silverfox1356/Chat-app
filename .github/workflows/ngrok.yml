@@ -20,12 +20,12 @@ jobs:
         cd server && npm install
         cd ../public && npm install
         cd ..
+        npm install -g ngrok
 
     - name: Start backend and frontend
       run: |
-        cd server && npm start &
-        cd ../public && npm start &
-        cd ..
+        (cd server && node node_modules/nodemon/bin/nodemon.js index.js &)
+        (cd public && npm start &)
 
     - name: Run ngrok tunnels
       env:
