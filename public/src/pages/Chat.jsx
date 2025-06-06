@@ -20,6 +20,7 @@ export default function Chat() {
   const [currentChat, setCurrentChat] = useState(undefined);
   //for footer we have to name current user 
   const [currentUser, setCurrentUser] = useState(undefined);
+  const [socketError, setSocketError] = useState(null);
 
 
   //for fetching the user from local storage   
@@ -61,6 +62,12 @@ export default function Chat() {
 
       socket.current.on("connect_error", (err) => {
         console.error("Socket connection error:", err);
+        setSocketError("Connection failed. Trying to reconnect...");
+      });
+
+      socket.current.on("error", (err) => {
+        console.error("Socket error:", err);
+        setSocketError("Socket error: " + err.message);
       });
 
       return () => {
@@ -108,6 +115,9 @@ export default function Chat() {
         ) : (
           <ChatContainer currentChat={currentChat} socket={socket} />
         )}
+        {socketError && (
+          <div className="socket-error">{socketError}</div>
+        )}
       </div>
     </Container>
   );
@@ -128,9 +138,14 @@ const Container = styled.div`
     background-color: #00000076;
     display: grid;
     grid-template-columns: 25% 75%;
-    // media query 
+    // media query
     @media screen and (min-width: 720px) and (max-width: 1080px) {
       grid-template-columns: 35% 65%;
     }
+  }
+  .socket-error {
+    color: #ff6b6b;
+    text-align: center;
+    padding-top: 0.5rem;
   }
 `;
