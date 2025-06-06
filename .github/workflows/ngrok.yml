@@ -33,3 +33,16 @@ jobs:
       run: |
         ngrok http 3000 --log=stdout > ngrok_frontend.log &
         ngrok http 5000 --log=stdout > ngrok_backend.log &
+
+    - name: Give Ngrok a moment to initialize
+      run: sleep 5
+
+    - name: Show last 20 lines of Frontend Ngrok Log
+      run: |
+        echo "=== Frontend Ngrok Log ==="
+        tail -n 20 ngrok_frontend.log || echo "(frontend log not found)"
+
+    - name: Show last 20 lines of Backend Ngrok Log
+      run: |
+        echo "=== Backend Ngrok Log ==="
+        tail -n 20 ngrok_backend.log || echo "(backend log not found)"
