@@ -1,115 +1,121 @@
-//adding the plateform for making of websites
-const express = require("express");
-//adding cors to deal with diffrent local host like 3000 3001  
-const cors = require("cors");
-const mongoose = require("mongoose");
-//add all routes to this page
-const authRoutes = require("./routes/auth");
-const messageRoutes = require("./routes/messages");
-//stating app on express plateform 
-const app = express();
-//sockets for synchrounous chatting 
-const socket = require("socket.io");
-const path =require("path");
+// server/index.js
+
+// 1) Load .env (make sure you have a file like server/.env with REACT_APP_CLIENT_URL set)
 require("dotenv").config();
 
+const express = require("express");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const socketIO = require("socket.io");
+const http = require("http");
+const path = require("path");
 
-//middlewares used 
-app.use(cors());
+// 2) Import your routes
+const authRoutes = require("./routes/auth");
+const messageRoutes = require("./routes/messages");
+
+////////////////////////////////////////////////////////////////////////////////
+//––– EXPRESS + MONGOOSE SETUP ––––––––––––––––––––––––––––––––––––––––––––––––
+////////////////////////////////////////////////////////////////////////////////
+
+const app = express();
+
+// 3) Configure CORS middleware to only allow your React/ngrok origin
+const CLIENT_URL = process.env.REACT_APP_CUSTOM_CLIENT_URL||"http://localhost:3000";
+
+console.log("client url is: ",CLIENT_URL);
+
+app.use(
+  cors({
+    origin: CLIENT_URL,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true,
+  })
+);
+
+// 4) Allow parsing JSON bodies
 app.use(express.json());
 
-
-const MONGO_URL = process.env.CUSTOM_MONGO_URL||"mongodb://localhost:27017/";
-
-//to connect the mongodb database
+// 5) Connect to MongoDB
+const MONGO_URL = process.env.CUSTOM_MONGO_URL || "mongodb://localhost:27017/";
 mongoose
   .connect(MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => {
-    console.log("DB Connection Successful");
-  })
-  .catch((err) => {
-    console.log(err.message);
-  });
+  .then(() => console.log("DB Connection Successful"))
+  .catch((err) => console.log("MongoDB Error:", err.message));
 
+// 6) Basic ping endpoint
+app.get("/ping", (_req, res) => res.json({ msg: "Ping Successful" }));
 
+// 7) Mount your API routes
+app.use("/api/auth", authRoutes);
+app.use("/api/messages", messageRoutes);
 
-app.get("/ping", (_req, res) => {
-  return res.json({ msg: "Ping Successful" });
+// 8) If you have a React build in `public/build`, serve it
+const __root = path.resolve();
+app.use(express.static(path.join(__root, "public", "build")));
+app.get("*", (_req, res) => {
+  res.sendFile(path.join(__root, "public", "build", "index.html"));
 });
 
-
-//using middleware for app  
-app.use("/api/auth", authRoutes);
-app.use("/api/messages", messageRoutes); 
-
-
-//******************deployment********************/
-const __dirname1 = path.resolve();
-  app.use(express.static(path.join(__dirname1,'/public/build')));
-
-
-  app.get('*',(req,res)=>{
-    res.sendFile(path.join(__dirname1,"public","build","index.html"));
-  })
-
-//******************deployment********************/
-
-
+// 9) Start the HTTP server
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () =>
-  console.log(`Server started on ${PORT}`)
-);
+const server = http.createServer(app);
 
-const io = socket(server, {
+////////////////////////////////////////////////////////////////////////////////
+//–––– SOCKET.IO SETUP (with CORS) ––––––––––––––––––––––––––––––––––––––––––––
+////////////////////////////////////////////////////////////////////////////////
+
+// 10) Initialize Socket.IO and explicitly allow the same origin as above.
+const io = new socketIO.Server(server, {
   cors: {
-    origin: [process.env.REACT_APP_CUSTOM_CLIENT_URL||"http://localhost:3000"],
+    origin: CLIENT_URL,
+    methods: ["GET", "POST"],
     credentials: true,
   },
 });
 
+// 11) Keep track of online users
 global.onlineUsers = new Map();
 
-
-//this builds a connection to socket or client {io.on}
 io.on("connection", (socket) => {
-  console.log(`User connected: ${socket.id}`);
-  
-  //when frontend add the user we catch and stores in our data base using string add-user
+  console.log(`🟢 User connected: ${socket.id}`);
+
   socket.on("add-user", (userId) => {
-    //adding the userid and socket id in map 
     onlineUsers.set(userId, socket.id);
-    console.log(`User added: ${userId} with socket ID: ${socket.id}`);
-    console.log("Current online users after adding user:", Array.from(onlineUsers.entries()));
+    console.log(`User added: ${userId} → ${socket.id}`);
+    console.log("Current online users:", Array.from(onlineUsers.entries()));
   });
 
-    //similar with string send-msg 
   socket.on("send-msg", (data) => {
-    console.log("Received message data:", data);
-
-    const sendUserSocket = onlineUsers.get(data.to);
-    if (sendUserSocket) {
-      console.log(`Sending message from ${data.from} to ${data.to}`);
-      socket.to(sendUserSocket).emit("msg-receive", data.msg);
+    console.log("Received message:", data);
+    const recipientSocket = onlineUsers.get(data.to);
+    if (recipientSocket) {
+      console.log(`Forwarding from ${data.from} → ${data.to}`);
+      socket.to(recipientSocket).emit("msg-receive", data.msg);
     } else {
-      console.log(`User ${data.to} not connected. Current online users:`, Array.from(onlineUsers.entries()));
+      console.log(`User ${data.to} not connected. Online now:`, Array.from(onlineUsers.entries()));
     }
   });
 
-  //when user disconnected and we have to delete it from online users 
   socket.on("disconnect", () => {
-    onlineUsers.forEach((value, key) => {
-      if (value === socket.id) {
-        onlineUsers.delete(key);
-        console.log(`User disconnected: ${key}`);
+    // Remove this socket from the global map
+    for (let [userId, sockId] of onlineUsers.entries()) {
+      if (sockId === socket.id) {
+        onlineUsers.delete(userId);
+        console.log(`User disconnected: ${userId}`);
       }
-    });
-    console.log("Current online users after disconnect:", Array.from(onlineUsers.entries()));
+    }
+    console.log("Remaining online users:", Array.from(onlineUsers.entries()));
   });
 
   socket.on("error", (err) => {
-    console.error(`Socket error: ${err}`);
+    console.error("Socket error:", err);
   });
-}); 
+});
+
+server.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`);
+});
