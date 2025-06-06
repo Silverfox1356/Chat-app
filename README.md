@@ -37,7 +37,19 @@ cd server
 npm install
 ```
 
-3. Run the App
+3. (Optional) Configure environment variables
+
+If the server is exposed via a public URL (for example using ngrok),
+create a `.env` file inside the `public` folder and set:
+
+```bash
+REACT_APP_CUSTOM_SERVER_URL=<your server url>
+```
+
+Ensure that `CUSTOM_CLIENT_URL` in `server/.env.local` points to the URL
+where the React application is served.
+
+4. Run the App
 
  Navigate to server directory and start the server
  ```bash
