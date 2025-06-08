@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Robot from "../assets/robot.gif";
+import { LOCAL_STORAGE_KEY } from "../utils/constants";
 export default function Welcome() {
   const [userName, setUserName] = useState("");
 
@@ -8,7 +9,7 @@ export default function Welcome() {
   useEffect(() => {
     const fetchData = async ()=>{
         const data=await JSON.parse(
-            localStorage.getItem("chat-app-user")
+            localStorage.getItem(LOCAL_STORAGE_KEY)
           ).username  ;
     setUserName(data);
 }
