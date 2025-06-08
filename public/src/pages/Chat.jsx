@@ -7,6 +7,7 @@ import { allUsersRoute, host } from "../utils/APIRoutes";
 import ChatContainer from "../components/ChatContainer";
 import Contacts from "../components/Contacts";
 import Welcome from "../components/Welcome";
+import { getStoredUser } from "../utils/localStorageHelpers";
 
 export default function Chat() {
   const navigate = useNavigate();
@@ -25,19 +26,18 @@ export default function Chat() {
 
   //for fetching the user from local storage   
   useEffect(() => {
-    const checkLocalStorage = async () => {
-      const userItem = localStorage.getItem("chat-app-user");
+    const checkLocalStorage = () => {
+      const user = getStoredUser();
 
-      if (!userItem) {
+      if (!user) {
         //if user not found then navigate to the login page
         navigate("/login");
       } else {
         //else set the current user in usestate
-        const user = await JSON.parse(userItem);
         setCurrentUser(user);
       }
     };
-    //first form a function and call it dont write it in one go 
+    //first form a function and call it dont write it in one go
     checkLocalStorage();
   }, [navigate]);
 

@@ -6,6 +6,7 @@ import Logout from "./Logout";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import { sendMessageRoute, recieveMessageRoute } from "../utils/APIRoutes";
+import { getStoredUser } from "../utils/localStorageHelpers";
 
 export default function ChatContainer({ currentChat, socket }) {
   const [messages, setMessages] = useState([]);
@@ -15,9 +16,8 @@ export default function ChatContainer({ currentChat, socket }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const storedUser = localStorage.getItem("chat-app-user");
-        if (!storedUser) return;
-        const data = JSON.parse(storedUser);
+        const data = getStoredUser();
+        if (!data) return;
         const response = await axios.post(recieveMessageRoute, {
           from: data._id,
           to: currentChat._id,
@@ -37,9 +37,9 @@ export default function ChatContainer({ currentChat, socket }) {
   useEffect(() => {
     const getCurrentChat = async () => {
       if (currentChat) {
-        const storedUser = localStorage.getItem("chat-app-user");
-        if (storedUser) {
-          await JSON.parse(storedUser)._id;
+        const data = getStoredUser();
+        if (data) {
+          await data._id;
         }
       }
     };
@@ -47,9 +47,8 @@ export default function ChatContainer({ currentChat, socket }) {
   }, [currentChat]);
 
   const handleSendMsg = async (msg) => {
-    const storedUser = localStorage.getItem("chat-app-user");
-    if (!storedUser) return;
-    const data = await JSON.parse(storedUser);
+    const data = getStoredUser();
+    if (!data) return;
     socket.current.emit("send-msg", {
       to: currentChat._id,
       from: data._id,
