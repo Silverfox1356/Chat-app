@@ -86,7 +86,7 @@ export default function Chat() {
         const { data } = await axios.get(
           `${allUsersRoute}/${currentUser._id}`
         );
-        if (!data) throw new Error("No contact data");
+        if (!data || !Array.isArray(data)) throw new Error("No contact data");
         setContacts(data);
       } catch (err) {
         console.warn("Contact fetch failed, logging out:", err);
