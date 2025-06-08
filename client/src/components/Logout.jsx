@@ -10,10 +10,13 @@ export default function Logout() {
 
   
   const handleClick = async () => {
-    const id = await JSON.parse(
-      localStorage.getItem(LOCAL_STORAGE_KEY)
-    )._id;
-    const data = await axios.get(`${logoutRoute}/${id}`);
+    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (!stored) {
+      navigate("/login");
+      return;
+    }
+    const { _id } = JSON.parse(stored);
+    const data = await axios.get(`${logoutRoute}/${_id}`);
     if (data.status === 200) {
       localStorage.clear();
       navigate("/login");
