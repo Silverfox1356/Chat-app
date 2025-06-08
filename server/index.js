@@ -61,14 +61,19 @@ app.use("/api/messages", messageRoutes);
 
 
 //******************deployment********************/
-const __dirname1 = path.resolve();
-  // serve React build from client/build when deployed
-  app.use(express.static(path.join(__dirname1, "client", "build")));
+// Resolve the path to the React build directory correctly. When the server is
+// started from the `server` folder, `path.resolve()` points to that folder,
+// leaving the build assets unresolved. Using `__dirname` and navigating one
+// level up ensures the `client/build` directory is found regardless of the
+// working directory.
+const clientBuildPath = path.join(__dirname, "..", "client", "build");
 
+// Serve React build from client/build when deployed
+app.use(express.static(clientBuildPath));
 
-  app.get('*',(req,res)=>{
-    res.sendFile(path.join(__dirname1,"client","build","index.html"));
-  })
+app.get('*', (_req, res) => {
+  res.sendFile(path.join(clientBuildPath, "index.html"));
+});
 
 //******************deployment********************/
 
