@@ -57,14 +57,18 @@ app.use("/api/messages", messageRoutes);
 // leaving the build assets unresolved. Using `__dirname` and navigating one
 // level up ensures the `client/build` directory is found regardless of the
 // working directory.
-const clientBuildPath = path.join(__dirname, "..", "client", "build");
+// In production serve React build from client/build. When running in
+// development the React dev server will handle serving the front-end so we
+// skip registering these routes.
+if (process.env.NODE_ENV === "production") {
+  const clientBuildPath = path.join(__dirname, "..", "client", "build");
 
-// Serve React build from client/build when deployed
-app.use(express.static(clientBuildPath));
+  app.use(express.static(clientBuildPath));
 
-app.get('*', (_req, res) => {
-  res.sendFile(path.join(clientBuildPath, "index.html"));
-});
+  app.get("*", (_req, res) => {
+    res.sendFile(path.join(clientBuildPath, "index.html"));
+  });
+}
 
 //******************deployment********************/
 
