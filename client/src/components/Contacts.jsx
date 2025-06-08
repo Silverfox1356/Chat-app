@@ -12,9 +12,18 @@ export default function Contacts({ contacts, changeChat }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
-      setCurrentUserName(data.username);
-      setCurrentUserImage(data.avatarImage);
+      const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (!stored) return;
+
+      try {
+        const data = JSON.parse(stored);
+        if (data) {
+          setCurrentUserName(data.username);
+          setCurrentUserImage(data.avatarImage);
+        }
+      } catch (err) {
+        console.error("Failed to load user from storage:", err);
+      }
     };
 
     fetchData();
