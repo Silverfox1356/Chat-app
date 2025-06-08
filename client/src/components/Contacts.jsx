@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Logo from "../assets/logo.svg";
+import { LOCAL_STORAGE_KEY } from "../utils/constants";
 
 export default function Contacts({ contacts, changeChat }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
@@ -10,7 +11,7 @@ export default function Contacts({ contacts, changeChat }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await JSON.parse(localStorage.getItem("chat-app-user"));
+      const data = await JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
       setCurrentUserName(data.username);
       setCurrentUserImage(data.avatarImage);
     };

@@ -9,6 +9,7 @@ const LOCAL_STORAGE_KEY = "chat-app-user";
 import ChatContainer from "../components/ChatContainer";
 import Contacts from "../components/Contacts";
 import Welcome from "../components/Welcome";
+import { LOCAL_STORAGE_KEY } from "../utils/constants";
 
 export default function Chat() {
   const navigate = useNavigate();
