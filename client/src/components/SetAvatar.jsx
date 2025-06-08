@@ -8,6 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { setAvatarRoute } from "../utils/APIRoutes";
+import { LOCAL_STORAGE_KEY } from "../utils/constants";
 
 export default function SetAvatar() {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ export default function SetAvatar() {
 
   useEffect(() => {
     const checkUser = async () => {
-      if (!localStorage.getItem("chat-app-user")) {
+      if (!localStorage.getItem(LOCAL_STORAGE_KEY)) {
         navigate("/login");
       }
     };
@@ -36,7 +37,7 @@ export default function SetAvatar() {
     if (selectedAvatar === undefined) {
       toast.error("Please select an avatar", toastOptions);
     } else {
-      const user = await JSON.parse(localStorage.getItem("chat-app-user"));
+      const user = await JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
       const { data } = await axios.post(`${setAvatarRoute}/${user._id}`, {
         image: avatars[selectedAvatar],
       });
@@ -45,7 +46,7 @@ export default function SetAvatar() {
       if (data.isSet) {
         user.isAvatarImageSet = true;
         user.avatarImage = data.image;
-        localStorage.setItem("chat-app-user", JSON.stringify(user));
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(user));
         navigate("/");
       } else {
         toast.error("Error setting avatar. Please try again.", toastOptions);

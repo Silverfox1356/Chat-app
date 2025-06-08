@@ -6,6 +6,7 @@ import Logo from "../assets/logo.svg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { loginRoute } from "../utils/APIRoutes";
+import { LOCAL_STORAGE_KEY } from "../utils/constants";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ export default function Login() {
 
   };
   useEffect(() => {
-    if (localStorage.getItem("chat-app-user")) {
+    if (localStorage.getItem(LOCAL_STORAGE_KEY)) {
       navigate("/");
     }
   }, [navigate]);
@@ -53,7 +54,7 @@ export default function Login() {
       }
       if (data.status === true) {
         localStorage.setItem(
-          "chat-app-user",
+          LOCAL_STORAGE_KEY,
           JSON.stringify(data.user)
         );
 
