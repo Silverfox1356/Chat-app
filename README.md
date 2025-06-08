@@ -30,24 +30,27 @@ cd chat-app
  ```
 2. Install the necessary dependencies:
 ```bash
-cd public
+cd client
 npm install
-cd ..
-cd server
+cd ../server
 npm install
 ```
 
-3. Run the App
+3. Configure environment variables. Copy `.env.example` to `.env` in both
+   the `client` and `server` folders and update the URLs to match your
+   deployment or testing environment.
 
- Navigate to server directory and start the server
- ```bash
+4. Run the App
+
+Navigate to server directory and start the server
+```bash
 cd server
 npm start
 ```
 
- Navigate to public directory and start the application
+Navigate to client directory and start the application
 ```bash
-cd public
+cd ../client
 npm start
 ```
 
