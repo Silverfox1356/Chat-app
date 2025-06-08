@@ -15,18 +15,9 @@ require("dotenv").config();
 
 
 //middlewares used
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(',')
-  : [process.env.REACT_APP_CUSTOM_CLIENT_URL || "http://localhost:3000"];
-
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-        return callback(null, true);
-      }
-      return callback(new Error("Not allowed by CORS"));
-    },
+    origin: "*",
     credentials: true,
   })
 );
@@ -85,7 +76,7 @@ const server = app.listen(PORT, () =>
 
 const io = socket(server, {
   cors: {
-    origin: [process.env.REACT_APP_CUSTOM_CLIENT_URL||"http://localhost:3000"],
+    origin: "*",
     credentials: true,
   },
 });
