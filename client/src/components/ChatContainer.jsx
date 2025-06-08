@@ -66,13 +66,14 @@ export default function ChatContainer({ currentChat, socket }) {
 
   useEffect(() => {
     if (socket.current) {
-      socket.current.on("msg-receive", (msg) => {
+      const currentSocket = socket.current;
+      currentSocket.on("msg-receive", (msg) => {
         setArrivalMessage({ fromSelf: false, message: msg });
       });
 
       // Clean up the event listener when the component unmounts
       return () => {
-        socket.current.off("msg-receive");
+        currentSocket.off("msg-receive");
       };
     }
   }, [socket]);
