@@ -1,16 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import styled from "styled-components";
 import { allUsersRoute, host } from "../utils/APIRoutes";
 import ChatContainer from "../components/ChatContainer";
 import Contacts from "../components/Contacts";
 import Welcome from "../components/Welcome";
+import { LOCAL_STORAGE_KEY } from "../utils/constants";
 
 export default function Chat() {
   const navigate = useNavigate();
-  const location = useLocation();
   const socket = useRef();
 
   const [contacts, setContacts] = useState([]);
@@ -19,19 +19,14 @@ export default function Chat() {
 
   // check auth & redirect once if needed
   useEffect(() => {
-    const userKey = process.env.REACT_APP_LOCALHOST_KEY;
-    const userItem = localStorage.getItem(userKey);
-    console.log("LOCALHOST_KEY:", process.env.REACT_APP_LOCALHOST_KEY);
-
+    const userItem = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (!userItem) {
-      if (location.pathname !== "/login") {
-        navigate("/login", { replace: true });
-      }
+      navigate("/login", { replace: true });
     } else {
       const user = JSON.parse(userItem);
       setCurrentUser(user);
     }
-  }, [navigate, location.pathname]);
+  }, [navigate]);
 
   // socket setup
   useEffect(() => {

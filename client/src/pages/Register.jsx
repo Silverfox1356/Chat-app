@@ -6,6 +6,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { registerRoute } from "../utils/APIRoutes";
+import { LOCAL_STORAGE_KEY } from "../utils/constants";
 
 export default function Register() {
       //to navigate to the other page
@@ -29,10 +30,10 @@ export default function Register() {
       });
 
       useEffect(() => {
-        if (localStorage.getItem("chat-app-user")) {
+        if (localStorage.getItem(LOCAL_STORAGE_KEY)) {
           navigate("/");
         }
-      }, []);
+      }, [navigate]);
 
      const handleChange = (event) => {
     //this destructurises the input vaue and set the value to usestate hook
@@ -95,8 +96,8 @@ export default function Register() {
       if (data.status === true) {
         //storing our data in local storage 
         localStorage.setItem(
-          "chat-app-user",
-          //data converting into json string bcz browser storage only stores strings 
+          LOCAL_STORAGE_KEY,
+          //data converting into json string bcz browser storage only stores strings
           JSON.stringify(data.user)
         );
         //this nevigates to the chat container 
