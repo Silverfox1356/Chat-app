@@ -25,7 +25,7 @@ support along with messages enhancing user's experience
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/DivineKushaL/chat-app.git
+git clone https://github.com/Silverfox1356/Chat-app.git
 cd chat-app
  ```
 2. Install the necessary dependencies:
