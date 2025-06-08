@@ -89,11 +89,8 @@ export default function Chat() {
         if (!data || !Array.isArray(data)) throw new Error("No contact data");
         setContacts(data);
       } catch (err) {
-        console.warn("Contact fetch failed, logging out:", err);
-        localStorage.removeItem(LOCAL_STORAGE_KEY);
-        if (location.pathname !== "/login") {
-          navigate("/login", { replace: true });
-        }
+        console.warn("Contact fetch failed:", err);
+        setContacts([]);
       }
     };
 
