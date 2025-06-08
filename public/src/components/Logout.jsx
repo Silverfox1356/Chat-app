@@ -9,9 +9,9 @@ export default function Logout() {
 
   
   const handleClick = async () => {
-    const id = await JSON.parse(
-      localStorage.getItem("chat-app-user")
-    )._id;
+    const storedUser = localStorage.getItem("chat-app-user");
+    if (!storedUser) return;
+    const id = await JSON.parse(storedUser)._id;
     const data = await axios.get(`${logoutRoute}/${id}`);
     if (data.status === 200) {
       localStorage.clear();
