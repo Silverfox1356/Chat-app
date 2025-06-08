@@ -15,7 +15,12 @@ require("dotenv").config();
 
 
 //middlewares used 
-app.use(cors());
+app.use(
+  cors({
+    origin: [process.env.REACT_APP_CUSTOM_CLIENT_URL || "http://localhost:3000"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 
