@@ -14,10 +14,19 @@ const path =require("path");
 require("dotenv").config();
 
 
-//middlewares used 
+//middlewares used
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : [process.env.REACT_APP_CUSTOM_CLIENT_URL || "http://localhost:3000"];
+
 app.use(
   cors({
-    origin: [process.env.REACT_APP_CUSTOM_CLIENT_URL || "http://localhost:3000"],
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   })
 );
@@ -53,11 +62,12 @@ app.use("/api/messages", messageRoutes);
 
 //******************deployment********************/
 const __dirname1 = path.resolve();
-  app.use(express.static(path.join(__dirname1,'/public/build')));
+  // serve React build from client/build when deployed
+  app.use(express.static(path.join(__dirname1, "client", "build")));
 
 
   app.get('*',(req,res)=>{
-    res.sendFile(path.join(__dirname1,"public","build","index.html"));
+    res.sendFile(path.join(__dirname1,"client","build","index.html"));
   })
 
 //******************deployment********************/
