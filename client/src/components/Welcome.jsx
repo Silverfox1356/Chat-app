@@ -7,13 +7,14 @@ export default function Welcome() {
 
   //fetching the username from local storage  
   useEffect(() => {
-    const fetchData = async ()=>{
-        const data=await JSON.parse(
-            localStorage.getItem(LOCAL_STORAGE_KEY)
-          ).username  ;
-    setUserName(data);
-}
-fetchData();
+    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (!stored) return;
+    try {
+      const { username } = JSON.parse(stored);
+      if (username) setUserName(username);
+    } catch (err) {
+      console.error("Failed to load username:", err);
+    }
   }, []);
 
 
