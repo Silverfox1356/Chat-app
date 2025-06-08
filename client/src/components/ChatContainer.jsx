@@ -8,8 +8,6 @@ import axios from "axios";
 import { sendMessageRoute, recieveMessageRoute } from "../utils/APIRoutes";
 import { LOCAL_STORAGE_KEY } from "../utils/constants";
 
-const LOCAL_STORAGE_KEY = "chat-app-user";
-
 export default function ChatContainer({ currentChat, socket }) {
   const [messages, setMessages] = useState([]);
   const scrollRef = useRef();
