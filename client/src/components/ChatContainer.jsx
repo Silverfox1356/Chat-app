@@ -16,14 +16,17 @@ export default function ChatContainer({ currentChat, socket }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
+        const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (!stored) return;
+
+        const data = JSON.parse(stored);
         const response = await axios.post(recieveMessageRoute, {
           from: data._id,
           to: currentChat._id,
         });
         setMessages(response.data);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
         // Optionally, handle error or show error message
       }
     };
@@ -36,18 +39,22 @@ export default function ChatContainer({ currentChat, socket }) {
   useEffect(() => {
     const getCurrentChat = async () => {
       if (currentChat) {
-        await JSON.parse(
-          localStorage.getItem(LOCAL_STORAGE_KEY)
-        )._id;
+        try {
+          const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+          if (!stored) return;
+          await JSON.parse(stored)._id;
+        } catch (err) {
+          console.error("Failed to read current user:", err);
+        }
       }
     };
     getCurrentChat();
   }, [currentChat]);
 
   const handleSendMsg = async (msg) => {
-    const data = await JSON.parse(
-      localStorage.getItem(LOCAL_STORAGE_KEY)
-    );
+    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (!stored) return;
+    const data = JSON.parse(stored);
     socket.current.emit("send-msg", {
       to: currentChat._id,
       from: data._id,
