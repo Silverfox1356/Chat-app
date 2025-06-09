@@ -25,6 +25,28 @@ app.use(
   })
 );
 app.use(express.json());
+// Prevent content type sniffing for security
+app.use((_req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  next();
+});
+// Ensure HTML responses include UTF-8 charset
+app.use((req, res, next) => {
+  if (req.accepts("html")) {
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+  }
+  next();
+});
+// Apply basic caching headers
+app.use((req, res, next) => {
+  // Cache static assets for a year and disable caching for other responses
+  if (req.method === "GET" && req.path.match(/\.(js|css|png|jpg|jpeg|svg|gif|ico)$/)) {
+    res.setHeader("Cache-Control", "public, max-age=31536000");
+  } else {
+    res.setHeader("Cache-Control", "no-store");
+  }
+  next();
+});
 
 
 const MONGO_URL = process.env.CUSTOM_MONGO_URL||"mongodb://localhost:27017/";
