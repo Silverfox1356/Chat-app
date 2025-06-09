@@ -48,7 +48,15 @@ export default function Chat() {
   useEffect(() => {
     if (!currentUser) return;
 
-    socket.current = io(host, {
+    let socketUrl = host;
+    if (host.includes("ngrok-free.app")) {
+      // When using ngrok a special query parameter is required
+      // otherwise the server returns an HTML warning page and the
+      // Socket.IO connection fails with a "server error" packet.
+      socketUrl = `${host}?ngrok-skip-browser-warning=true`;
+    }
+
+    socket.current = io(socketUrl, {
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
     });
