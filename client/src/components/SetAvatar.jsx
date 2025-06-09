@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import axios from "axios";
+import apiClient from "../utils/apiClient";
 import { Buffer } from "buffer";
 import multiavatar from "@multiavatar/multiavatar/esm";
 import loader from "../assets/loader.gif";
@@ -38,7 +38,7 @@ export default function SetAvatar() {
       toast.error("Please select an avatar", toastOptions);
     } else {
       const user = await JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
-      const { data } = await axios.post(`${setAvatarRoute}/${user._id}`, {
+      const { data } = await apiClient.post(`${setAvatarRoute}/${user._id}`, {
         image: avatars[selectedAvatar],
       });
       console.log(data);
