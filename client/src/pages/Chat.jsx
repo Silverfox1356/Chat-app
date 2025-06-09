@@ -86,8 +86,13 @@ export default function Chat() {
         const { data } = await axios.get(
           `${allUsersRoute}/${currentUser._id}`
         );
-        if (!data || !Array.isArray(data)) throw new Error("No contact data");
-        setContacts(data);
+
+        if (Array.isArray(data)) {
+          setContacts(data);
+        } else {
+          console.warn("Unexpected contacts response:", data);
+          setContacts([]);
+        }
       } catch (err) {
         console.warn("Contact fetch failed:", err);
         setContacts([]);
