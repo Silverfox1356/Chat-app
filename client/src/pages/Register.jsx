@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import axios from "axios";
+import apiClient from "../utils/apiClient";
 import Logo from "../assets/logo.svg";
 import { useNavigate, Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -83,7 +83,7 @@ export default function Register() {
     if (handleValidation()) {
       const { email, username, password } = values;
       //fetching data from register route 
-      const { data } = await axios.post(registerRoute, {
+      const { data } = await apiClient.post(registerRoute, {
         username,
         email,
         password,
