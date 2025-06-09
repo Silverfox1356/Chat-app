@@ -23,7 +23,7 @@ export default function Logout() {
     }
   };
   return (
-    <Button onClick={handleClick}>
+    <Button onClick={handleClick} title="Logout" aria-label="Logout">
       <BiPowerOff />
     </Button>
   );
