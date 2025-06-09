@@ -25,6 +25,11 @@ app.use(
   })
 );
 app.use(express.json());
+// Prevent content type sniffing for security
+app.use((_req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  next();
+});
 // Ensure HTML responses include UTF-8 charset
 app.use((req, res, next) => {
   if (req.accepts("html")) {
