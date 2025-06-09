@@ -32,6 +32,16 @@ app.use((req, res, next) => {
   }
   next();
 });
+// Apply basic caching headers
+app.use((req, res, next) => {
+  // Cache static assets for a year and disable caching for other responses
+  if (req.method === "GET" && req.path.match(/\.(js|css|png|jpg|jpeg|svg|gif|ico)$/)) {
+    res.setHeader("Cache-Control", "public, max-age=31536000");
+  } else {
+    res.setHeader("Cache-Control", "no-store");
+  }
+  next();
+});
 
 
 const MONGO_URL = process.env.CUSTOM_MONGO_URL||"mongodb://localhost:27017/";
