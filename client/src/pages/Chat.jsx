@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
+import apiClient from "../utils/apiClient";
 import { useNavigate, useLocation } from "react-router-dom";
 import { io } from "socket.io-client";
 import styled from "styled-components";
@@ -30,7 +30,7 @@ export default function Chat() {
       }
       const user = JSON.parse(userItem);
       try {
-        await axios.get(`${allUsersRoute}/${user._id}`);
+        await apiClient.get(`${allUsersRoute}/${user._id}`);
         setCurrentUser(user);
       } catch (err) {
         console.warn("User validation failed:", err);
@@ -83,7 +83,7 @@ export default function Chat() {
       }
 
       try {
-        const { data } = await axios.get(
+        const { data } = await apiClient.get(
           `${allUsersRoute}/${currentUser._id}`
         );
 
