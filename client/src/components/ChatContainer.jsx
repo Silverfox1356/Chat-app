@@ -4,7 +4,7 @@ import ChatInput from "./ChatInput";
 import Logout from "./Logout";
 
 import { v4 as uuidv4 } from "uuid";
-import axios from "axios";
+import apiClient from "../utils/apiClient";
 import { sendMessageRoute, recieveMessageRoute } from "../utils/APIRoutes";
 import { LOCAL_STORAGE_KEY } from "../utils/constants";
 
@@ -20,7 +20,7 @@ export default function ChatContainer({ currentChat, socket }) {
         if (!stored) return;
 
         const data = JSON.parse(stored);
-        const response = await axios.post(recieveMessageRoute, {
+        const response = await apiClient.post(recieveMessageRoute, {
           from: data._id,
           to: currentChat._id,
         });
@@ -60,7 +60,7 @@ export default function ChatContainer({ currentChat, socket }) {
       from: data._id,
       msg,
     });
-    await axios.post(sendMessageRoute, {
+    await apiClient.post(sendMessageRoute, {
       from: data._id,
       to: currentChat._id,
       message: msg,
