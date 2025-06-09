@@ -40,6 +40,10 @@ npm install
    the `client` and `server` folders and update the URLs to match your
    deployment or testing environment.
 
+   If you expose the server using **ngrok**, add the special
+   `ngrok-skip-browser-warning` header for all HTTP requests and include
+   `?ngrok-skip-browser-warning=true` when establishing Socket.IO connections.
+
 4. Run the App
 
 Navigate to server directory and start the server
