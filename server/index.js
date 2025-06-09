@@ -15,9 +15,12 @@ require("dotenv").config();
 
 
 //middlewares used
+// Use CORS to allow requests from any origin while supporting credentials.
+// Setting `origin: true` reflects the request origin and is compatible with
+// `credentials: true` without violating the CORS specification.
 app.use(
   cors({
-    origin: "*",
+    origin: true,
     credentials: true,
   })
 );
@@ -80,7 +83,8 @@ const server = app.listen(PORT, () =>
 
 const io = socket(server, {
   cors: {
-    origin: "*",
+    // Reflect the request origin for Socket.IO connections as well
+    origin: true,
     credentials: true,
   },
 });
