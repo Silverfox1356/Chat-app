@@ -25,6 +25,13 @@ app.use(
   })
 );
 app.use(express.json());
+// Ensure HTML responses include UTF-8 charset
+app.use((req, res, next) => {
+  if (req.accepts("html")) {
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+  }
+  next();
+});
 
 
 const MONGO_URL = process.env.CUSTOM_MONGO_URL||"mongodb://localhost:27017/";
