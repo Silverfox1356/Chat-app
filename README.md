@@ -62,7 +62,5 @@ npm start
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-## Deployment
 
-WeatherSphere is deployed using render and can be accessed at [NexChat](https://nexchat-1-1x8i.onrender.com).
 
